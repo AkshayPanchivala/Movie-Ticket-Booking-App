@@ -1,0 +1,404 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Cinema-Themed Design System */
+@layer base {
+  :root {
+    /* Cinema Light Theme - Elegant Gold & Cream */
+    --background: 40 20% 97%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    /* Gold/Amber Primary for Cinema Feel */
+    --primary: 38 92% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 38 92% 50%;
+
+    --chart-1: 38 92% 50%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Cinema Dark Theme - Rich Blacks & Golds with High Contrast */
+    --background: 240 10% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 8% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Brighter Gold for Dark Mode */
+    --primary: 38 92% 55%;
+    --primary-foreground: 240 10% 10%;
+
+    --secondary: 240 4% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 4% 18%;
+    --muted-foreground: 240 5% 70%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 240 10% 10%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
+    --ring: 38 92% 55%;
+
+    --chart-1: 38 92% 55%;
+    --chart-2: 160 60% 50%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow: hidden; /* Prevent body scroll since we have fixed layout */
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure high contrast for all text elements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground font-semibold;
+  }
+
+  p {
+    @apply text-foreground;
+  }
+
+  /* Fix button text visibility */
+  button {
+    @apply font-medium transition-all duration-200;
+  }
+
+  /* Ensure input fields are always visible */
+  input, textarea, select {
+    @apply text-foreground bg-background;
+  }
+
+  /* Fix placeholder text visibility */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground;
+  }
+
+  /* Card improvements */
+  .dark .card {
+    @apply bg-card border-border;
+  }
+}
+
+/* Cinema-specific custom styles */
+@layer components {
+  .cinema-gradient {
+    @apply bg-gradient-to-br from-primary/20 via-background to-background;
+  }
+
+  .cinema-border {
+    @apply border-2 border-primary/30 hover:border-primary/50 transition-colors;
+  }
+
+  .cinema-glow {
+    box-shadow: 0 0 20px rgba(var(--primary), 0.3);
+  }
+
+  .cinema-card {
+    @apply bg-card rounded-xl border border-border shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  .cinema-card-dark {
+    @apply dark:bg-card dark:border-border;
+  }
+}
+
+/* Premium Cinema Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    hsl(var(--muted) / 0.1),
+    hsl(var(--muted) / 0.3),
+    hsl(var(--muted) / 0.1)
+  );
+  border-radius: 12px;
+  margin: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--primary)) 0%,
+    hsl(38, 92%, 45%) 50%,
+    hsl(45, 93%, 47%) 100%
+  );
+  border-radius: 12px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  box-shadow:
+    0 0 8px rgba(234, 179, 8, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    hsl(38, 92%, 60%) 0%,
+    hsl(38, 92%, 50%) 50%,
+    hsl(45, 93%, 52%) 100%
+  );
+  border-width: 2px;
+  box-shadow:
+    0 0 16px rgba(234, 179, 8, 0.6),
+    0 0 24px rgba(234, 179, 8, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  transform: scaleX(1.1);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    180deg,
+    hsl(38, 92%, 50%) 0%,
+    hsl(38, 92%, 40%) 50%,
+    hsl(45, 93%, 42%) 100%
+  );
+  box-shadow:
+    0 0 12px rgba(234, 179, 8, 0.8),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Scrollbar Corner */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark Mode Scrollbar Enhancements */
+.dark ::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    hsl(var(--background)) 0%,
+    hsl(var(--muted) / 0.4) 50%,
+    hsl(var(--background)) 100%
+  );
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    hsl(38, 92%, 55%) 0%,
+    hsl(38, 92%, 50%) 50%,
+    hsl(45, 93%, 48%) 100%
+  );
+  box-shadow:
+    0 0 12px rgba(234, 179, 8, 0.5),
+    0 0 20px rgba(234, 179, 8, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    hsl(38, 92%, 65%) 0%,
+    hsl(38, 92%, 55%) 50%,
+    hsl(45, 93%, 53%) 100%
+  );
+  box-shadow:
+    0 0 20px rgba(234, 179, 8, 0.7),
+    0 0 32px rgba(234, 179, 8, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.3);
+}
+
+/* Smooth scrollbar appearance animation */
+@keyframes scrollbar-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  animation: scrollbar-appear 0.3s ease-in-out;
+}
+
+/* Custom Scrollbar Class for Special Elements */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--card)) 0%,
+    hsl(var(--muted) / 0.2) 50%,
+    hsl(var(--card)) 100%
+  );
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    135deg,
+    hsl(38, 92%, 55%) 0%,
+    hsl(38, 92%, 50%) 25%,
+    hsl(45, 93%, 48%) 50%,
+    hsl(38, 92%, 50%) 75%,
+    hsl(38, 92%, 55%) 100%
+  );
+  background-size: 200% 200%;
+  animation: scrollbar-gradient 3s ease infinite, scrollbar-appear 0.3s ease-in-out;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  box-shadow:
+    0 0 10px rgba(234, 179, 8, 0.5),
+    0 0 20px rgba(234, 179, 8, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes scrollbar-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  animation: scrollbar-gradient 1.5s ease infinite, scrollbar-pulse 1s ease infinite;
+  box-shadow:
+    0 0 16px rgba(234, 179, 8, 0.7),
+    0 0 28px rgba(234, 179, 8, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: scaleX(1.2);
+}
+
+@keyframes scrollbar-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 16px rgba(234, 179, 8, 0.7),
+      0 0 28px rgba(234, 179, 8, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(234, 179, 8, 0.9),
+      0 0 36px rgba(234, 179, 8, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    135deg,
+    hsl(38, 92%, 60%) 0%,
+    hsl(38, 92%, 55%) 25%,
+    hsl(45, 93%, 53%) 50%,
+    hsl(38, 92%, 55%) 75%,
+    hsl(38, 92%, 60%) 100%
+  );
+  box-shadow:
+    0 0 14px rgba(234, 179, 8, 0.6),
+    0 0 24px rgba(234, 179, 8, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Ensure visibility of all interactive elements */
+.dark .text-muted-foreground {
+  opacity: 1 !important;
+}
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 20px theme('colors.primary.DEFAULT');
+  }
+}
