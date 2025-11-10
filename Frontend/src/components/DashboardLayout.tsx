@@ -1,5 +1,6 @@
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
+import { Footer } from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Navbar />
       <div className="flex pt-16">
         <Sidebar />
-        <main className="flex-1 ml-64 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+        <main className="flex-1 ml-64 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar pb-12">
           <div className="p-8 max-w-[1800px] mx-auto w-full">
             <div className="cinema-gradient rounded-2xl p-1 shadow-xl">
               <div className="bg-background/95 rounded-2xl p-6">
@@ -20,6 +21,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </main>
+        <div className="fixed bottom-0 left-64 right-0 z-20">
+          <Footer />
+        </div>
       </div>
     </div>
   );

@@ -72,8 +72,8 @@ const movieSchema = new mongoose.Schema({
   }
 });
 
-// Index for searching
-movieSchema.index({ title: 'text', director: 'text' });
+// Index for searching with language-neutral text index
+movieSchema.index({ title: 'text', director: 'text' }, { default_language: 'none' });
 movieSchema.index({ genre: 1 });
 movieSchema.index({ release_date: -1 });
 

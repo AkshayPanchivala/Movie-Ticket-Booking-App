@@ -17,6 +17,7 @@ export function SalesReport() {
 
   // Fetch all bookings for the theater
   useEffect(() => {
+    console.log(user?.theater_id,"user?.theater_id")
     if (user?.theater_id) {
       dispatch(fetchUserBookings({ limit: 1000 }));
     }

@@ -10,6 +10,7 @@ import { Film, Sparkles, Mail, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { ButtonSpinner } from '@/components/LoadingSpinner';
+import { Footer } from '@/components/Footer';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -37,7 +38,7 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-4 pb-14">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
         {/* Floating orbs */}
@@ -83,7 +84,7 @@ export function Login() {
 
       {/* Content */}
       <motion.div
-        className="relative z-10"
+        className="relative z-10 flex-1 flex items-center justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -254,6 +255,11 @@ export function Login() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Fixed Footer */}
+      <div className="fixed bottom-0 left-0 right-0 z-20">
+        <Footer variant="dark" />
+      </div>
     </div>
   );
 }
