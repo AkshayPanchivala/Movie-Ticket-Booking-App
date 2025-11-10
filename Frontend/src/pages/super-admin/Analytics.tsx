@@ -3,7 +3,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as analyticsService from '@/services/analytics.service';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, Film, Users, DollarSign } from 'lucide-react';
+import { Building2, Film, Users, DollarSign, IndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function Analytics() {
@@ -63,7 +63,7 @@ export function Analytics() {
     {
       title: 'Total Revenue',
       value: `₹${stats.totalRevenue.toFixed(2)}`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100 dark:bg-orange-900/20',
     },

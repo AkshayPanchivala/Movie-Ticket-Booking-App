@@ -8,7 +8,6 @@ import {
   Users,
   BarChart3,
   Monitor,
-  DollarSign,
   IndianRupee,
 } from 'lucide-react';
 

@@ -5,7 +5,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Ticket, DollarSign, TrendingUp, RefreshCw } from 'lucide-react';
+import { Calendar, Ticket, TrendingUp, RefreshCw, IndianRupee } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { useConfig } from '@/contexts/ConfigContext';
 import { cn } from '@/lib/utils';
@@ -146,7 +146,7 @@ export function SalesReport() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <IndianRupee className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{currencySymbol}{summary.total_revenue.toFixed(2)}</div>
