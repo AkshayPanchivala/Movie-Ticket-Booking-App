@@ -47,46 +47,22 @@ This is a full-stack movie ticket booking application built with the MERN stack 
 
 ### 1. Backend Setup
 
-1.  Navigate to the `Backend` directory:
-    ```bash
-    cd Backend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file from the example:
-    ```bash
-    cp .env.example .env
-    ```
-4.  Update the `.env` file with your configuration (MongoDB URI, JWT secrets, Stripe keys, etc.).
-5.  Start the backend server:
-    ```bash
-    npm run dev
-    ```
-    The backend will be running on `http://localhost:3000` (or your configured port).
+1. Navigate to the `Backend` directory:
+
+   ```bash
+   cd Backend
+   ```
+2. Open and review the **README.md** file located inside the `Backend` directory.
+
 
 ### 2. Frontend Setup
 
-1.  Navigate to the `Frontend` directory:
-    ```bash
-    cd Frontend
+
+1. Navigate to the `Backend` directory:
+
+   ```bash
+   cd Frontend
+   ```
+2. Open and review the **README.md** file located inside the `Frontend` directory.
+
     ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file from the example:
-    ```bash
-    cp .env.example .env
-    ```
-4.  Update the `.env` file with your backend API URL and Stripe publishable key.
-    ```
-    VITE_API_BASE_URL=http://localhost:3000/api/v1
-    VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_pk_here
-    ```
-5.  Start the frontend development server:
-    ```bash
-    npm run dev
-    ```
-    The application will be available at `http://localhost:5173` (or another port if 5173 is busy).
