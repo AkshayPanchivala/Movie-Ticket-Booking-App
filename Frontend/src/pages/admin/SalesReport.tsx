@@ -1,66 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchUserBookings } from '@/store/slices/bookingSlice';
+import { fetchSalesReport } from '@/store/slices/analyticsSlice';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Ticket, DollarSign, Users, Film } from 'lucide-react';
-import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Calendar, Ticket, DollarSign, TrendingUp, RefreshCw } from 'lucide-react';
+import { format, subDays } from 'date-fns';
 import { useConfig } from '@/contexts/ConfigContext';
+import { cn } from '@/lib/utils';
 
 export function SalesReport() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const { bookings, isLoading } = useAppSelector((state) => state.bookings);
-  const { platformFee, currencySymbol } = useConfig();
+  const { salesReport, isLoading } = useAppSelector((state) => state.analytics);
+  const { currencySymbol } = useConfig();
 
-  // Fetch all bookings for the theater
+  const [dateRange, setDateRange] = useState({
+    date_from: format(subDays(new Date(), 90), 'yyyy-MM-dd'),
+    date_to: format(new Date(), 'yyyy-MM-dd'),
+  });
+  const [groupBy, setGroupBy] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+
+  // Fetch sales report
   useEffect(() => {
-    console.log(user?.theater_id,"user?.theater_id")
     if (user?.theater_id) {
-      dispatch(fetchUserBookings({ limit: 1000 }));
+      dispatch(fetchSalesReport({
+        theater_id: user.theater_id,
+        date_from: dateRange.date_from,
+        date_to: dateRange.date_to,
+        group_by: groupBy,
+      }));
     }
-  }, [dispatch, user?.theater_id]);
+  }, [dispatch, user?.theater_id, dateRange, groupBy]);
 
-  // Filter bookings for this theater only
-  const theaterBookings = bookings.filter(
-    (booking) => booking.show?.theater?.id === user?.theater_id
-  );
-
-  // Calculate statistics
-  const totalRevenue = theaterBookings.reduce(
-    (sum, booking) => sum + (booking.status === 'confirmed' || booking.status === 'completed' ? booking.total_amount : 0),
-    0
-  );
-
-  const totalTickets = theaterBookings.reduce(
-    (sum, booking) => sum + (booking.status === 'confirmed' || booking.status === 'completed' ? (booking.booking_seats?.length || 0) : 0),
-    0
-  );
-
-  const totalBookings = theaterBookings.filter(
-    (booking) => booking.status === 'confirmed' || booking.status === 'completed'
-  ).length;
-
-  const uniqueMovies = new Set(
-    theaterBookings.map((booking) => booking.show?.movie?.id).filter(Boolean)
-  ).size;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-500';
-      case 'cancelled':
-        return 'bg-red-500';
-      case 'completed':
-        return 'bg-blue-500';
-      default:
-        return 'bg-yellow-500';
+  const handleRefresh = () => {
+    if (user?.theater_id) {
+      dispatch(fetchSalesReport({
+        theater_id: user.theater_id,
+        date_from: dateRange.date_from,
+        date_to: dateRange.date_to,
+        group_by: groupBy,
+      }));
     }
   };
 
-  if (isLoading) {
+  const handleDateRangeChange = (days: number) => {
+    setDateRange({
+      date_from: format(subDays(new Date(), days), 'yyyy-MM-dd'),
+      date_to: format(new Date(), 'yyyy-MM-dd'),
+    });
+  };
+
+  if (isLoading && !salesReport) {
     return (
       <DashboardLayout>
         <LoadingSpinner size="full" text="Loading sales report..." variant="cinema" />
@@ -68,12 +60,85 @@ export function SalesReport() {
     );
   }
 
+  const summary = salesReport?.summary || {
+    total_bookings: 0,
+    total_revenue: 0,
+    average_ticket_price: 0,
+    total_seats_sold: 0,
+  };
+
+  const salesByPeriod = salesReport?.sales_by_period || [];
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Sales Report</h1>
-          <p className="text-muted-foreground">Revenue and booking statistics for your theater</p>
+        {/* Header with filters */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Sales Report</h1>
+            <p className="text-muted-foreground">
+              Revenue and booking statistics for your theater (Last {Math.ceil((new Date(dateRange.date_to).getTime() - new Date(dateRange.date_from).getTime()) / (1000 * 60 * 60 * 24))} days)
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={dateRange.date_from === format(subDays(new Date(), 7), 'yyyy-MM-dd') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleDateRangeChange(7)}
+            >
+              Last 7 Days
+            </Button>
+            <Button
+              variant={dateRange.date_from === format(subDays(new Date(), 30), 'yyyy-MM-dd') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleDateRangeChange(30)}
+            >
+              Last 30 Days
+            </Button>
+            <Button
+              variant={dateRange.date_from === format(subDays(new Date(), 90), 'yyyy-MM-dd') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleDateRangeChange(90)}
+            >
+              Last 90 Days
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")} />
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {/* Group By Filter */}
+        <div className="flex gap-2">
+          <span className="text-sm text-muted-foreground self-center">Group by:</span>
+          <Button
+            variant={groupBy === 'daily' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setGroupBy('daily')}
+          >
+            Daily
+          </Button>
+          <Button
+            variant={groupBy === 'weekly' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setGroupBy('weekly')}
+          >
+            Weekly
+          </Button>
+          <Button
+            variant={groupBy === 'monthly' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setGroupBy('monthly')}
+          >
+            Monthly
+          </Button>
         </div>
 
         {/* Statistics Cards */}
@@ -84,20 +149,20 @@ export function SalesReport() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{currencySymbol}{totalRevenue.toFixed(2)}</div>
+              <div className="text-2xl font-bold">{currencySymbol}{summary.total_revenue.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                From {totalBookings} bookings
+                From {summary.total_bookings} bookings
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
+              <CardTitle className="text-sm font-medium">Seats Sold</CardTitle>
               <Ticket className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalTickets}</div>
+              <div className="text-2xl font-bold">{summary.total_seats_sold}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 Total seats booked
               </p>
@@ -107,10 +172,10 @@ export function SalesReport() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalBookings}</div>
+              <div className="text-2xl font-bold">{summary.total_bookings}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 Confirmed bookings
               </p>
@@ -119,64 +184,53 @@ export function SalesReport() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Movies Shown</CardTitle>
-              <Film className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Avg Ticket Price</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{uniqueMovies}</div>
+              <div className="text-2xl font-bold">{currencySymbol}{summary.average_ticket_price.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                Different movies
+                Per ticket
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Bookings */}
+        {/* Sales by Period */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
+            <CardTitle>Sales Over Time ({groupBy.charAt(0).toUpperCase() + groupBy.slice(1)})</CardTitle>
           </CardHeader>
           <CardContent>
-            {theaterBookings.length === 0 ? (
+            {salesByPeriod.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                <Ticket className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>No bookings found for your theater</p>
+                <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p>No sales data available for the selected period</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {theaterBookings.slice(0, 10).map((booking) => (
+              <div className="space-y-3">
+                {salesByPeriod.map((period, index) => (
                   <div
-                    key={booking.id}
+                    key={index}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">{booking.show?.movie?.title || 'Unknown Movie'}</p>
-                        <Badge className={getStatusColor(booking.status)}>
-                          {booking.status.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex-1">
+                      <p className="font-semibold">{period.period}</p>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {booking.show?.show_date
-                            ? format(new Date(booking.show.show_date), 'MMM dd, yyyy')
-                            : 'N/A'}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {booking.show?.show_time || 'N/A'}
+                          {period.bookings} bookings
                         </div>
                         <div className="flex items-center gap-1">
                           <Ticket className="w-3 h-3" />
-                          {booking.booking_seats?.length || 0} seats
+                          {period.seats_sold} seats
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-lg">{currencySymbol}{booking.total_amount.toFixed(2)}</p>
+                      <p className="font-bold text-lg text-primary">{currencySymbol}{period.revenue.toFixed(2)}</p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(booking.booking_date), 'MMM dd, HH:mm')}
+                        {currencySymbol}{(period.revenue / period.bookings).toFixed(2)} avg
                       </p>
                     </div>
                   </div>
@@ -185,59 +239,6 @@ export function SalesReport() {
             )}
           </CardContent>
         </Card>
-
-        {/* Revenue Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Revenue Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Ticket Sales</span>
-                <span className="font-bold">{currencySymbol}{(totalRevenue - (totalBookings * platformFee)).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Platform Fees</span>
-                <span className="font-bold">{currencySymbol}{(totalBookings * platformFee).toFixed(2)}</span>
-              </div>
-              <div className="border-t pt-4 flex justify-between items-center">
-                <span className="font-bold">Total Revenue</span>
-                <span className="font-bold text-primary text-xl">{currencySymbol}{totalRevenue.toFixed(2)}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Booking Statistics</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Confirmed</span>
-                <span className="font-bold text-green-600">
-                  {theaterBookings.filter((b) => b.status === 'confirmed').length}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Completed</span>
-                <span className="font-bold text-blue-600">
-                  {theaterBookings.filter((b) => b.status === 'completed').length}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Cancelled</span>
-                <span className="font-bold text-red-600">
-                  {theaterBookings.filter((b) => b.status === 'cancelled').length}
-                </span>
-              </div>
-              <div className="border-t pt-4 flex justify-between items-center">
-                <span className="font-bold">Total Bookings</span>
-                <span className="font-bold text-primary text-xl">{theaterBookings.length}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </DashboardLayout>
   );

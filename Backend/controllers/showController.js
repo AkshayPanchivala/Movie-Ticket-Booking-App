@@ -138,6 +138,13 @@ exports.createShow = async (req, res, next) => {
   try {
     const show = await Show.create(req.body);
 
+    // Populate the show before returning
+    await show.populate([
+      { path: 'movie_id', select: 'title poster_url runtime' },
+      { path: 'theater_id', select: 'name location city' },
+      { path: 'screen_id', select: 'name rows columns total_seats' }
+    ]);
+
     res.status(201).json({
       success: true,
       message: 'Show created successfully',
@@ -157,7 +164,10 @@ exports.updateShow = async (req, res, next) => {
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    );
+    )
+      .populate('movie_id', 'title poster_url runtime')
+      .populate('theater_id', 'name location city')
+      .populate('screen_id', 'name rows columns total_seats');
 
     if (!show) {
       return next(new ErrorResponse('Show not found', 404, 'NOT_FOUND'));

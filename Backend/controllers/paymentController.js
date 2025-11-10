@@ -127,7 +127,6 @@ exports.handleWebhook = async (req, res, next) => {
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      console.log('Payment succeeded:', paymentIntent.id);
 
       // You can update booking status or send notifications here
       // For now, we handle this in the confirmPayment endpoint
@@ -135,11 +134,9 @@ exports.handleWebhook = async (req, res, next) => {
 
     case 'payment_intent.payment_failed':
       const failedPayment = event.data.object;
-      console.log('Payment failed:', failedPayment.id);
       break;
 
     default:
-      console.log(`Unhandled event type: ${event.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event

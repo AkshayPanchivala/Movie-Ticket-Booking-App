@@ -9,6 +9,7 @@ import {
   BarChart3,
   Monitor,
   DollarSign,
+  IndianRupee,
 } from 'lucide-react';
 
 export function Sidebar() {
@@ -25,7 +26,7 @@ export function Sidebar() {
     { to: '/admin/movies', icon: Film, label: 'Manage Movies' },
     { to: '/admin/screens', icon: Monitor, label: 'Manage Screens' },
     { to: '/admin/shows', icon: Ticket, label: 'Manage Shows' },
-    { to: '/admin/sales', icon: DollarSign, label: 'Sales Report' },
+    { to: '/admin/sales', icon: IndianRupee, label: 'Sales Report' },
   ];
 
   const superAdminLinks = [

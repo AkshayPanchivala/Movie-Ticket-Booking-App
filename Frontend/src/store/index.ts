@@ -4,6 +4,7 @@ import movieReducer from './slices/movieSlice';
 import bookingReducer from './slices/bookingSlice';
 import theaterReducer from './slices/theaterSlice';
 import showReducer from './slices/showSlice';
+import analyticsReducer from './slices/analyticsSlice';
 import { errorMiddleware } from './middleware/errorMiddleware';
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     bookings: bookingReducer,
     theaters: theaterReducer,
     shows: showReducer,
+    analytics: analyticsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

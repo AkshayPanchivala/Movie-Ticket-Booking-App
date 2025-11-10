@@ -33,8 +33,7 @@ const seedAdmins = async () => {
     // Connect to MongoDB
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cinehub';
     await mongoose.connect(mongoUri);
-    console.log('✅ Connected to MongoDB');
-    console.log(`📊 Database: ${mongoose.connection.name}\n`);
+    
 
     // Create admin users
     let created = 0;
@@ -52,49 +51,18 @@ const seedAdmins = async () => {
             existingUser.theater_id = userData.theater_id;
           }
           await existingUser.save();
-          console.log(`🔄 Updated ${userData.email} to ${userData.role}`);
           updated++;
         } else {
-          console.log(`⚠️  User ${userData.email} already exists with correct role`);
           skipped++;
         }
       } else {
         await User.create(userData);
-        console.log(`✅ Created ${userData.role}: ${userData.email}`);
         created++;
       }
     }
-
-    console.log('\n' + '='.repeat(60));
-    console.log('🎉 Admin users seed completed!');
-    console.log('='.repeat(60));
-    console.log(`📊 Summary:`);
-    console.log(`   - Created: ${created} users`);
-    console.log(`   - Updated: ${updated} users`);
-    console.log(`   - Skipped: ${skipped} users`);
-    console.log('='.repeat(60));
-
-    console.log('\n📋 Login Credentials:');
-    console.log('─'.repeat(60));
-    adminUsers.forEach(user => {
-      console.log(`\n👤 ${user.full_name}`);
-      console.log(`   Role:     ${user.role}`);
-      console.log(`   Email:    ${user.email}`);
-      console.log(`   Password: ${user.password}`);
-    });
-    console.log('\n' + '─'.repeat(60));
-
-    console.log('\n⚠️  IMPORTANT:');
-    console.log('   1. Change these passwords after first login!');
-    console.log('   2. Keep credentials secure');
-    console.log('   3. Only share with authorized personnel\n');
-
     await mongoose.connection.close();
-    console.log('✅ Database connection closed\n');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding admins:', error.message);
-    console.error('Stack trace:', error.stack);
     await mongoose.connection.close();
     process.exit(1);
   }

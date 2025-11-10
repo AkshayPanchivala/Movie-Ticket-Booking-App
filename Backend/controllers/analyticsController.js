@@ -150,18 +150,27 @@ exports.getSalesReport = async (req, res, next) => {
       return next(new ErrorResponse('date_from and date_to are required', 400, 'VALIDATION_ERROR'));
     }
 
+    // Create date range that includes the full day
+    const startDate = new Date(date_from);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(date_to);
+    endDate.setHours(23, 59, 59, 999);
+
     const dateFilter = {
       booking_date: {
-        $gte: new Date(date_from),
-        $lte: new Date(date_to)
+        $gte: startDate,
+        $lte: endDate
       },
       status: { $in: ['confirmed', 'completed'] }
     };
 
-    let bookings = await Booking.find(dateFilter).populate({
-      path: 'show_id',
-      populate: { path: 'theater_id' }
-    });
+    let bookings = await Booking.find(dateFilter)
+      .populate({
+        path: 'show_id',
+        populate: { path: 'theater_id' }
+      })
+      .populate('booking_seats');
 
     // Filter out bookings with missing show/theater data (deleted references)
     bookings = bookings.filter(b =>
@@ -170,6 +179,7 @@ exports.getSalesReport = async (req, res, next) => {
 
     // Filter by theater
     if (req.user.role === 'theater_admin' && req.user.theater_id) {
+     
       bookings = bookings.filter(b =>
         b.show_id && b.show_id.theater_id && b.show_id.theater_id._id.toString() === req.user.theater_id.toString()
       );
@@ -179,11 +189,13 @@ exports.getSalesReport = async (req, res, next) => {
       );
     }
 
+  
+
     // Summary
     const total_bookings = bookings.length;
     const total_revenue = bookings.reduce((sum, b) => sum + b.total_amount, 0);
-    const total_seats_sold = bookings.length; // Simplified - should count actual seats
-    const average_ticket_price = total_bookings > 0 ? total_revenue / total_bookings : 0;
+    const total_seats_sold = bookings.reduce((sum, b) => sum + (b.booking_seats?.length || 0), 0);
+    const average_ticket_price = total_seats_sold > 0 ? total_revenue / total_seats_sold : 0;
 
     // Sales by period
     const salesByPeriod = {};
@@ -210,7 +222,7 @@ exports.getSalesReport = async (req, res, next) => {
       }
       salesByPeriod[period].bookings++;
       salesByPeriod[period].revenue += booking.total_amount;
-      salesByPeriod[period].seats_sold++;
+      salesByPeriod[period].seats_sold += booking.booking_seats?.length || 0;
     });
 
     res.status(200).json({
