@@ -1,4 +1,4 @@
-# CineHub Backend API
+# Movie Ticket Booking Backend API
 
 A comprehensive cinema booking system backend built with Node.js, Express, and MongoDB.
 
