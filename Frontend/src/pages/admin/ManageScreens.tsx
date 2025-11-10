@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Plus, Edit, Armchair } from 'lucide-react';
 import { toast } from 'sonner';
 import { Screen } from '@/types/api.types';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export function ManageScreens() {
   const dispatch = useAppDispatch();
@@ -153,9 +154,7 @@ export function ManageScreens() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+          <LoadingSpinner size="md" text="Loading screens..." variant="cinema" />
         ) : screens.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Armchair className="w-16 h-16 mx-auto mb-4 opacity-50" />

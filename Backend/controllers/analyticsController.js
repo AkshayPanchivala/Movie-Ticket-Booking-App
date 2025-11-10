@@ -36,6 +36,11 @@ exports.getDashboardAnalytics = async (req, res, next) => {
       ]
     });
 
+    // Filter out bookings with missing show/movie/theater data (deleted references)
+    bookings = bookings.filter(b =>
+      b.show_id && b.show_id.movie_id && b.show_id.theater_id
+    );
+
     // Filter by theater if theater_admin or theater_id specified
     if (req.user.role === 'theater_admin' && req.user.theater_id) {
       bookings = bookings.filter(b =>
@@ -69,6 +74,8 @@ exports.getDashboardAnalytics = async (req, res, next) => {
     // Popular movies
     const movieStats = {};
     bookings.forEach(booking => {
+      if (!booking.show_id || !booking.show_id.movie_id) return;
+
       const movieId = booking.show_id.movie_id._id.toString();
       if (!movieStats[movieId]) {
         movieStats[movieId] = {
@@ -89,6 +96,8 @@ exports.getDashboardAnalytics = async (req, res, next) => {
     // Theater performance
     const theaterStats = {};
     bookings.forEach(booking => {
+      if (!booking.show_id || !booking.show_id.theater_id) return;
+
       const theaterId = booking.show_id.theater_id._id.toString();
       if (!theaterStats[theaterId]) {
         theaterStats[theaterId] = {

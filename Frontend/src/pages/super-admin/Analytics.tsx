@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as analyticsService from '@/services/analytics.service';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, Film, Users, DollarSign } from 'lucide-react';
@@ -71,9 +72,7 @@ export function Analytics() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner size="full" text="Loading analytics..." variant="cinema" />
       </DashboardLayout>
     );
   }

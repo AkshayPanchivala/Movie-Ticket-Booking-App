@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, MapPin, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Theater } from '@/types/api.types';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export function ManageTheaters() {
   const dispatch = useAppDispatch();
@@ -111,9 +112,7 @@ export function ManageTheaters() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+          <LoadingSpinner size="md" text="Loading theaters..." variant="cinema" />
         ) : theaters.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />

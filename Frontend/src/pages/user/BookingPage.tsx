@@ -9,6 +9,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { TheaterSelector } from '@/components/TheaterSelector';
 import { SeatSelectionGrid } from '@/components/SeatSelectionGrid';
 import { PaymentModal } from '@/components/PaymentModal';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock } from 'lucide-react';
@@ -117,9 +118,7 @@ export function BookingPage() {
   if (movieLoading || !movie) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner size="full" text="Loading movie details..." variant="cinema" />
       </DashboardLayout>
     );
   }
@@ -206,9 +205,7 @@ export function BookingPage() {
                 </CardHeader>
                 <CardContent>
                   {showsLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
+                    <LoadingSpinner size="md" text="Loading seat availability..." variant="cinema" />
                   ) : !availableSeats || seats.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <p>No seat information available.</p>

@@ -19,6 +19,7 @@ import { Calendar, Clock, MapPin, Ticket, ChevronLeft, ChevronRight, X } from 'l
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useConfig } from '@/contexts/ConfigContext';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export function MyBookings() {
   const dispatch = useAppDispatch();
@@ -104,9 +105,7 @@ export function MyBookings() {
   if (isLoading && currentPage === 1) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner size="full" text="Loading your bookings..." variant="cinema" />
       </DashboardLayout>
     );
   }

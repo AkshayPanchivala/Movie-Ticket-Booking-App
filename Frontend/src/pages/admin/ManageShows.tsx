@@ -5,12 +5,14 @@ import { fetchScreensByTheater } from '@/store/slices/theaterSlice';
 import { createShow } from '@/store/slices/showSlice';
 import * as showService from '@/services/show.service';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-picker';
 import { Plus, Calendar, Clock, Film } from 'lucide-react';
 import { toast } from 'sonner';
 import { Show } from '@/types/api.types';
@@ -30,10 +32,9 @@ export function ManageShows() {
   const [formData, setFormData] = useState({
     movie_id: '',
     screen_id: '',
-    show_date: '',
-    show_time: '',
     price: '',
   });
+  const [showDateTime, setShowDateTime] = useState<Date | undefined>(undefined);
 
   // Fetch movies and screens on mount
   useEffect(() => {
@@ -80,7 +81,7 @@ export function ManageShows() {
       return;
     }
 
-    if (!formData.movie_id || !formData.screen_id || !formData.show_date || !formData.show_time || !formData.price) {
+    if (!formData.movie_id || !formData.screen_id || !showDateTime || !formData.price) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -92,8 +93,8 @@ export function ManageShows() {
         movie_id: formData.movie_id,
         screen_id: formData.screen_id,
         theater_id: user.theater_id,
-        show_date: formData.show_date,
-        show_time: formData.show_time,
+        show_date: format(showDateTime, 'yyyy-MM-dd'),
+        show_time: format(showDateTime, 'HH:mm'),
         price: parseFloat(formData.price),
       };
 
@@ -134,10 +135,9 @@ export function ManageShows() {
     setFormData({
       movie_id: '',
       screen_id: '',
-      show_date: '',
-      show_time: '',
       price: '',
     });
+    setShowDateTime(undefined);
   };
 
   if (!user?.theater_id && user?.role !== 'super_admin') {
@@ -152,9 +152,6 @@ export function ManageShows() {
       </DashboardLayout>
     );
   }
-
-  // Get today's date for min date constraint
-  const today = new Date().toISOString().split('T')[0];
 
   return (
     <DashboardLayout>
@@ -171,9 +168,7 @@ export function ManageShows() {
         </div>
 
         {isLoadingShows ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+          <LoadingSpinner size="md" text="Loading shows..." variant="cinema" />
         ) : theaterShows.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Film className="w-16 h-16 mx-auto mb-4 opacity-50" />
@@ -261,29 +256,16 @@ export function ManageShows() {
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="show_date">Show Date</Label>
-              <Input
-                id="show_date"
-                type="date"
-                min={today}
-                value={formData.show_date}
-                onChange={(e) => setFormData({ ...formData, show_date: e.target.value })}
-                required
+            <div className="col-span-2">
+              <Label htmlFor="show_datetime">Show Date & Time</Label>
+              <DateTimePicker
+                date={showDateTime}
+                onDateChange={setShowDateTime}
+                placeholder="Select show date and time"
+                disabled={isSubmitting}
+                showTime={true}
               />
-            </div>
-
-            <div>
-              <Label htmlFor="show_time">Show Time</Label>
-              <Input
-                id="show_time"
-                type="time"
-                value={formData.show_time}
-                onChange={(e) => setFormData({ ...formData, show_time: e.target.value })}
-                placeholder="HH:MM (e.g., 14:30)"
-                required
-              />
-              <p className="text-xs text-muted-foreground mt-1">Format: HH:MM (24-hour)</p>
+              <p className="text-xs text-muted-foreground mt-1">Select the date and time for this show</p>
             </div>
 
             <div>

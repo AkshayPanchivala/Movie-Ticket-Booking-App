@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchUserBookings } from '@/store/slices/bookingSlice';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Ticket, DollarSign, Users, Film } from 'lucide-react';
@@ -61,9 +62,7 @@ export function SalesReport() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner size="full" text="Loading sales report..." variant="cinema" />
       </DashboardLayout>
     );
   }

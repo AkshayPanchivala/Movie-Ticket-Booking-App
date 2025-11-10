@@ -7,9 +7,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Loader2, ShoppingCart } from 'lucide-react';
+import { CheckCircle2, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StripePayment } from '@/components/StripePayment';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as paymentService from '@/services/payment.service';
 import { useConfig } from '@/contexts/ConfigContext';
 import { toast } from 'sonner';
@@ -142,10 +143,7 @@ export function PaymentModal({
                   className="space-y-4"
                 >
                   {loadingStripe ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      <span className="ml-2 text-muted-foreground">Initializing payment...</span>
-                    </div>
+                    <LoadingSpinner size="md" text="Initializing secure payment..." variant="cinema" />
                   ) : stripeClientSecret ? (
                     <StripePayment
                       clientSecret={stripeClientSecret}
@@ -154,8 +152,8 @@ export function PaymentModal({
                       onCancel={onClose}
                     />
                   ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <p>Failed to initialize payment. Please try again.</p>
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Failed to initialize payment. Please try again.</p>
                     </div>
                   )}
                 </motion.div>
@@ -178,26 +176,58 @@ export function PaymentModal({
               key="payment-success"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="py-12 text-center"
+              className="py-16 text-center"
             >
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  delay: 0.2,
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 15
+                }}
               >
-                <CheckCircle2 className="w-24 h-24 mx-auto text-green-500 mb-6" />
+                <div className="relative inline-block">
+                  <motion.div
+                    className="absolute inset-0 bg-green-500/20 rounded-full blur-2xl"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.5, 0.8, 0.5],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                  <CheckCircle2 className="relative w-24 h-24 mx-auto text-green-500 mb-6" />
+                </div>
               </motion.div>
-              <h3 className="text-3xl font-bold text-foreground mb-3">Payment Successful!</h3>
-              <p className="text-muted-foreground text-lg mb-6">
-                Your booking has been confirmed
-              </p>
-              <motion.div
+
+              <motion.h3
+                className="text-3xl font-bold text-foreground mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                Payment Successful!
+              </motion.h3>
+
+              <motion.p
+                className="text-muted-foreground text-lg mb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <Loader2 className="w-6 h-6 mx-auto animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground mt-3">Redirecting to bookings...</p>
+                Your booking has been confirmed
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <LoadingSpinner size="sm" text="Redirecting to your bookings..." />
               </motion.div>
             </motion.div>
           )}

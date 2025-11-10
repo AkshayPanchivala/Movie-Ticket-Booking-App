@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import * as userService from '@/services/user.service';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -286,10 +287,7 @@ export function ManageUsers() {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                      <span className="text-muted-foreground">Loading users...</span>
-                    </div>
+                    <LoadingSpinner size="sm" text="Loading users..." variant="cinema" />
                   </TableCell>
                 </TableRow>
               ) : users.length === 0 ? (

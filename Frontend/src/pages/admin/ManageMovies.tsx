@@ -8,9 +8,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Plus, Edit, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Movie } from '@/types/api.types';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+
+// Common languages for movies
+const LANGUAGES = [
+  'English',
+  'Hindi',
+  'Tamil',
+  'Telugu',
+  'Malayalam',
+  'Kannada',
+  'Bengali',
+  'Marathi',
+  'Gujarati',
+  'Punjabi',
+  'Spanish',
+  'French',
+  'German',
+  'Japanese',
+  'Korean',
+  'Chinese',
+  'Arabic',
+  'Other'
+];
 
 export function ManageMovies() {
   const dispatch = useAppDispatch();
@@ -31,8 +56,8 @@ export function ManageMovies() {
     movie_cast: '',
     rating: '',
     runtime: '',
-    release_date: '',
   });
+  const [releaseDate, setReleaseDate] = useState<Date | undefined>(undefined);
 
   // Fetch movies on mount
   useEffect(() => {
@@ -54,7 +79,7 @@ export function ManageMovies() {
       movie_cast: formData.movie_cast.split(',').map((c) => c.trim()),
       rating: parseFloat(formData.rating) || undefined,
       runtime: parseInt(formData.runtime),
-      release_date: formData.release_date,
+      release_date: releaseDate ? releaseDate.toISOString().split('T')[0] : '',
     };
 
     if (editingMovie) {
@@ -87,8 +112,8 @@ export function ManageMovies() {
       movie_cast: '',
       rating: '',
       runtime: '',
-      release_date: '',
     });
+    setReleaseDate(undefined);
     setEditingMovie(null);
   };
 
@@ -106,8 +131,8 @@ export function ManageMovies() {
       movie_cast: movie.movie_cast.join(', '),
       rating: movie.rating?.toString() || '',
       runtime: movie.runtime.toString(),
-      release_date: movie.release_date,
     });
+    setReleaseDate(movie.release_date ? new Date(movie.release_date) : undefined);
     setDialogOpen(true);
   };
 
@@ -126,9 +151,7 @@ export function ManageMovies() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+          <LoadingSpinner size="md" text="Loading movies..." variant="cinema" />
         ) : movies.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <p>No movies found. Start by adding your first movie!</p>
@@ -233,13 +256,22 @@ export function ManageMovies() {
               </div>
               <div>
                 <Label htmlFor="language">Language</Label>
-                <Input
-                  id="language"
+                <Select
                   value={formData.language}
-                  onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                  placeholder="English"
+                  onValueChange={(value) => setFormData({ ...formData, language: value })}
                   required
-                />
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((language) => (
+                      <SelectItem key={language} value={language}>
+                        {language}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="duration">Duration (minutes)</Label>
@@ -277,12 +309,11 @@ export function ManageMovies() {
               </div>
               <div className="col-span-2">
                 <Label htmlFor="release_date">Release Date</Label>
-                <Input
-                  id="release_date"
-                  type="date"
-                  value={formData.release_date}
-                  onChange={(e) => setFormData({ ...formData, release_date: e.target.value })}
-                  required
+                <DatePicker
+                  date={releaseDate}
+                  onDateChange={setReleaseDate}
+                  placeholder="Select release date"
+                  disabled={isCreating || isUpdating}
                 />
               </div>
             </div>

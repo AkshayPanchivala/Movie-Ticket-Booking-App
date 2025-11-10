@@ -5,6 +5,7 @@ import { fetchMovies } from '@/store/slices/movieSlice';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { MovieCard } from '@/components/MovieCard';
 import { MovieDetailsModal } from '@/components/MovieDetailsModal';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -82,15 +83,7 @@ export function MoviesList() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-[2/3] bg-muted rounded-lg mb-4" />
-                <div className="h-4 bg-muted rounded mb-2" />
-                <div className="h-3 bg-muted rounded w-2/3" />
-              </div>
-            ))}
-          </div>
+          <LoadingSpinner size="full" text="Loading movies..." variant="cinema" />
         ) : (
           <>
             <motion.div

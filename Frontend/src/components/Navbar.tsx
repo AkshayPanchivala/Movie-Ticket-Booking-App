@@ -11,9 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, User, Moon, Sun, Film } from 'lucide-react';
+import { LogOut, User, Moon, Sun, Film, Sparkles } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { showSuccessToast } from '@/lib/toast';
+import { motion } from 'framer-motion';
 
 export function Navbar() {
   const dispatch = useAppDispatch();
@@ -49,14 +50,57 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-xl supports-[backdrop-filter]:bg-card/90 shadow-sm">
       <div className="flex h-16 items-center px-6 justify-between max-w-[2000px] mx-auto">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-gradient-to-br from-primary to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
-            <Film className="h-6 w-6 text-primary-foreground" />
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
+          <div className="relative">
+            {/* Pulsing background glow */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-primary/40 to-amber-600/40 rounded-xl blur-md"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+
+            {/* Main icon container */}
+            <motion.div
+              className="relative h-10 w-10 bg-gradient-to-br from-primary to-amber-600 rounded-xl flex items-center justify-center shadow-lg"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              <Film className="h-6 w-6 text-primary-foreground" />
+            </motion.div>
+
+            {/* Sparkle effect */}
+            <motion.div
+              className="absolute -top-1 -right-1"
+              animate={{
+                rotate: [0, 360],
+                scale: [1, 1.3, 1],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <Sparkles className="w-4 h-4 text-amber-400 drop-shadow-lg" />
+            </motion.div>
           </div>
+
           <div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary via-amber-500 to-yellow-600 bg-clip-text text-transparent tracking-tight">
+            <motion.span
+              className="text-2xl font-bold bg-gradient-to-r from-primary via-amber-500 to-yellow-600 bg-clip-text text-transparent tracking-tight"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
               CineHub
-            </span>
+            </motion.span>
             <p className="text-[10px] text-muted-foreground -mt-1 uppercase tracking-widest font-semibold">
               Premium Cinema
             </p>
