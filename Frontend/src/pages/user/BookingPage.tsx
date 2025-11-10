@@ -36,7 +36,26 @@ export function BookingPage() {
   const [selectedShow, setSelectedShow] = useState<Show | null>(null);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [selectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+
+  // Generate dates for next 4 days (today + 3 more days)
+  const getNextDates = () => {
+    const dates = [];
+    for (let i = 0; i < 4; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      dates.push({
+        dateStr: date.toISOString().split('T')[0],
+        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNum: date.getDate(),
+        monthName: date.toLocaleDateString('en-US', { month: 'short' }),
+        isToday: i === 0
+      });
+    }
+    return dates;
+  };
+
+  const availableDates = getNextDates();
 
   // Fetch movie and theaters on mount
   useEffect(() => {
@@ -93,17 +112,19 @@ export function BookingPage() {
   const handleConfirmPayment = async (paymentMethod: 'card' | 'upi' | 'netbanking' | 'wallet' | 'stripe', paymentDetails: Record<string, any>) => {
     if (!selectedShow || !user || selectedSeatIds.length === 0) return;
 
-    const result = await dispatch(
-      createBooking({
-        show_id: selectedShow.id,
-        seat_ids: selectedSeatIds,
-        payment_method: paymentMethod as any,
-        payment_details: {
-          ...paymentDetails,
-          payment_intent_id: paymentDetails.payment_intent_id,
-        },
-      } as any)
-    );
+    const bookingData: any = {
+      show_id: selectedShow.id,
+      seat_ids: selectedSeatIds,
+      payment_method: paymentMethod,
+      payment_details: paymentDetails,
+    };
+
+    // Add payment_intent_id at root level for Stripe payments
+    if (paymentDetails.payment_intent_id) {
+      bookingData.payment_intent_id = paymentDetails.payment_intent_id;
+    }
+
+    const result = await dispatch(createBooking(bookingData));
 
     if (createBooking.fulfilled.match(result)) {
       toast.success(`Booking confirmed! Successfully booked ${selectedSeatIds.length} seat(s) for ${movie?.title}`);
@@ -153,49 +174,98 @@ export function BookingPage() {
             </Card>
 
             {selectedTheaterId && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Select Show Time</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Date</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="relative">
+                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                        {availableDates.map((date) => (
+                          <motion.button
+                            key={date.dateStr}
+                            onClick={() => {
+                              setSelectedDate(date.dateStr);
+                              setSelectedShow(null); // Reset show when date changes
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={cn(
+                              "flex-shrink-0 w-24 h-28 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center gap-1",
+                              selectedDate === date.dateStr
+                                ? "bg-gradient-to-br from-primary to-amber-500 border-primary shadow-lg shadow-primary/30 text-white"
+                                : "bg-card border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            <span className="text-xs font-medium uppercase opacity-80">
+                              {date.dayName}
+                            </span>
+                            <span className="text-3xl font-bold">
+                              {date.dayNum}
+                            </span>
+                            <span className="text-sm font-medium uppercase opacity-90">
+                              {date.monthName}
+                            </span>
+                            {date.isToday && (
+                              <span className={cn(
+                                "text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full mt-1",
+                                selectedDate === date.dateStr
+                                  ? "bg-white/20"
+                                  : "bg-primary/10 text-primary"
+                              )}>
+                                Today
+                              </span>
+                            )}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Show Time</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                   {showsLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : shows.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      <p>No shows available at this theater.</p>
-                      <p className="text-sm mt-2">Please select a different theater or check back later.</p>
+                      <p>No shows available for {format(new Date(selectedDate), 'EEEE, MMMM d')}.</p>
+                      <p className="text-sm mt-2">Please select a different date or theater.</p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {Array.from(new Set(shows.map((s) => s.show_date))).map((date) => (
-                        <div key={date}>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Calendar className="w-4 h-4 text-muted-foreground" />
-                            <span className="font-medium">{format(new Date(date), 'EEEE, MMMM d, yyyy')}</span>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {shows
-                              .filter((s) => s.show_date === date)
-                              .map((show) => (
-                                <Button
-                                  key={show.id}
-                                  variant={selectedShow?.id === show.id ? 'default' : 'outline'}
-                                  onClick={() => setSelectedShow(show)}
-                                  className="min-w-[100px]"
-                                >
-                                  <Clock className="w-4 h-4 mr-2" />
-                                  {show.show_time}
-                                </Button>
-                              ))}
-                          </div>
-                        </div>
+                    <div className="flex flex-wrap gap-3">
+                      {shows.map((show) => (
+                        <motion.div
+                          key={show.id}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Button
+                            variant={selectedShow?.id === show.id ? 'default' : 'outline'}
+                            onClick={() => setSelectedShow(show)}
+                            className={cn(
+                              "min-w-[120px] h-14 text-base font-semibold transition-all duration-200",
+                              selectedShow?.id === show.id
+                                ? "bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90 shadow-lg shadow-primary/20"
+                                : "hover:border-primary/50 hover:bg-primary/5"
+                            )}
+                          >
+                            <Clock className="w-5 h-5 mr-2" />
+                            {show.show_time}
+                          </Button>
+                        </motion.div>
                       ))}
                     </div>
                   )}
                 </CardContent>
               </Card>
+              </>
             )}
 
             {selectedShow && (

@@ -16,7 +16,7 @@ exports.createBooking = async (req, res, next) => {
     const { show_id, seat_ids, payment_method, payment_details, payment_intent_id } = req.body;
 
     // If using Stripe, verify payment intent
-    if (payment_method === 'stripe' || payment_intent_id) {
+    if (payment_method === 'stripe') {
       if (!payment_intent_id) {
         await session.abortTransaction();
         return next(new ErrorResponse('payment_intent_id is required for Stripe payments', 400, 'VALIDATION_ERROR'));

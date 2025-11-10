@@ -163,14 +163,19 @@ exports.getSalesReport = async (req, res, next) => {
       populate: { path: 'theater_id' }
     });
 
+    // Filter out bookings with missing show/theater data (deleted references)
+    bookings = bookings.filter(b =>
+      b.show_id && b.show_id.theater_id
+    );
+
     // Filter by theater
     if (req.user.role === 'theater_admin' && req.user.theater_id) {
       bookings = bookings.filter(b =>
-        b.show_id.theater_id._id.toString() === req.user.theater_id.toString()
+        b.show_id && b.show_id.theater_id && b.show_id.theater_id._id.toString() === req.user.theater_id.toString()
       );
     } else if (theater_id) {
       bookings = bookings.filter(b =>
-        b.show_id.theater_id._id.toString() === theater_id
+        b.show_id && b.show_id.theater_id && b.show_id.theater_id._id.toString() === theater_id
       );
     }
 
