@@ -7,7 +7,7 @@ import * as showService from '@/services/show.service';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -177,33 +177,62 @@ export function ManageShows() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {theaterShows.map((show) => (
-              <Card key={show.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Film className="w-5 h-5 text-primary" />
-                    {show.movie?.title || 'Movie'}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    {show.show_date ? format(new Date(show.show_date), 'MMM dd, yyyy') : 'N/A'}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    {show.show_time}
-                  </div>
-                  <div className="pt-2 border-t">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Screen</span>
-                      <span className="font-medium">{show.screen?.name || 'N/A'}</span>
+              <Card key={show.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                <div className="flex gap-4 p-4">
+                  {/* Movie Poster */}
+                  {show.movie?.poster_url && (
+                    <div className="flex-shrink-0">
+                      <img
+                        src={show.movie.poster_url}
+                        alt={show.movie.title}
+                        className="w-20 h-28 object-cover rounded-lg border border-border"
+                      />
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-sm text-muted-foreground">Price</span>
-                      <span className="font-bold text-primary">₹{show.price}</span>
+                  )}
+
+                  {/* Show Details */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base mb-2 truncate">
+                      {show.movie?.title || 'Movie'}
+                    </h3>
+
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{show.show_date ? format(new Date(show.show_date), 'MMM dd, yyyy') : 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{show.show_time}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Film className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{(show as any).movie?.runtime || 0} min</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Screen</span>
+                        <span className="font-medium">{show.screen?.name || 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Capacity</span>
+                        <span className="font-medium">{show.screen?.total_seats || 0} seats</span>
+                      </div>
+                      {user?.role === 'super_admin' && show.theater?.name && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">Theater</span>
+                          <span className="font-medium truncate max-w-[150px]">{show.theater.name}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs text-muted-foreground">Price</span>
+                        <span className="font-bold text-base text-primary">₹{show.price}</span>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
