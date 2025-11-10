@@ -63,7 +63,7 @@ export function ManageShows() {
         limit: 100 // Get up to 100 shows
       });
 
-      setTheaterShows(response.data.shows || []);
+      setTheaterShows((response.data as any).shows || []);
     } catch (error: any) {
       console.error('Error loading shows:', error);
       toast.error('Failed to load shows');

@@ -15,13 +15,12 @@ import { Loader2 } from 'lucide-react';
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 interface CheckoutFormProps {
-  clientSecret: string;
   amount: number;
   onSuccess: (paymentIntentId: string) => void;
   onCancel: () => void;
 }
 
-function CheckoutForm({ clientSecret, amount, onSuccess, onCancel }: CheckoutFormProps) {
+function CheckoutForm({ amount, onSuccess, onCancel }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -146,7 +145,6 @@ export function StripePayment({ clientSecret, amount, onSuccess, onCancel }: Str
           }}
         >
           <CheckoutForm
-            clientSecret={clientSecret}
             amount={amount}
             onSuccess={onSuccess}
             onCancel={onCancel}

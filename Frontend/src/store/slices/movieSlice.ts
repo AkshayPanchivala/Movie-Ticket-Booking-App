@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as movieService from '../../services/movie.service';
 import { Movie, CreateMovieDto, MovieQueryParams, Pagination } from '../../types/api.types';
 import { extractErrorMessage } from '@/lib/toast';

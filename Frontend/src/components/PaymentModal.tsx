@@ -40,7 +40,7 @@ export function PaymentModal({
   const { platformFee, currencySymbol } = useConfig();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
-  const [stripePaymentIntentId, setStripePaymentIntentId] = useState<string | null>(null);
+  
   const [loadingStripe, setLoadingStripe] = useState(false);
 
   // Create Stripe payment intent when modal opens
@@ -61,7 +61,6 @@ export function PaymentModal({
       });
 
       setStripeClientSecret(response.data.client_secret);
-      setStripePaymentIntentId(response.data.payment_intent_id);
     } catch (error: any) {
       toast.error(error.error?.message || 'Failed to initialize payment');
       console.error('Stripe payment intent error:', error);
@@ -71,7 +70,6 @@ export function PaymentModal({
   };
 
   const handleStripePaymentSuccess = (paymentIntentId: string) => {
-    setStripePaymentIntentId(paymentIntentId);
     setPaymentSuccess(true);
     setTimeout(() => {
       onConfirmPayment('stripe', { payment_intent_id: paymentIntentId });

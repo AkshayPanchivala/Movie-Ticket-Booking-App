@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchUserBookings } from '@/store/slices/bookingSlice';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, Ticket, TrendingUp, DollarSign, Users, Film } from 'lucide-react';
+import { Calendar, Clock, Ticket, DollarSign, Users, Film } from 'lucide-react';
 import { format } from 'date-fns';
 import { useConfig } from '@/contexts/ConfigContext';
 
@@ -13,11 +13,6 @@ export function SalesReport() {
   const { user } = useAppSelector((state) => state.auth);
   const { bookings, isLoading } = useAppSelector((state) => state.bookings);
   const { platformFee, currencySymbol } = useConfig();
-
-  const [dateRange, setDateRange] = useState({
-    from: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-    to: new Date().toISOString().split('T')[0],
-  });
 
   // Fetch all bookings for the theater
   useEffect(() => {

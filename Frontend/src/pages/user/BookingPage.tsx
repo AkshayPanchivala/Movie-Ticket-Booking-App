@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Show, Theater, Screen, SeatWithBookingStatus } from '@/types/api.types';
+import { Show, Screen, SeatWithBookingStatus } from '@/types/api.types';
 
 export function BookingPage() {
   const { movieId } = useParams();
@@ -25,7 +25,7 @@ export function BookingPage() {
 
   // Redux state
   const { selectedMovie: movie, isLoading: movieLoading } = useAppSelector((state) => state.movies);
-  const { theaters, isLoading: theatersLoading } = useAppSelector((state) => state.theaters);
+  const { theaters } = useAppSelector((state) => state.theaters);
   const { shows, availableSeats, isLoading: showsLoading } = useAppSelector((state) => state.shows);
   const { isCreating: bookingLoading } = useAppSelector((state) => state.bookings);
   const { user } = useAppSelector((state) => state.auth);
@@ -35,7 +35,7 @@ export function BookingPage() {
   const [selectedShow, setSelectedShow] = useState<Show | null>(null);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate] = useState<string>('');
 
   // Fetch movie and theaters on mount
   useEffect(() => {
@@ -96,10 +96,12 @@ export function BookingPage() {
       createBooking({
         show_id: selectedShow.id,
         seat_ids: selectedSeatIds,
-        payment_method: paymentMethod,
-        payment_details: paymentDetails,
-        payment_intent_id: paymentDetails.payment_intent_id,
-      })
+        payment_method: paymentMethod as any,
+        payment_details: {
+          ...paymentDetails,
+          payment_intent_id: paymentDetails.payment_intent_id,
+        },
+      } as any)
     );
 
     if (createBooking.fulfilled.match(result)) {
@@ -144,7 +146,7 @@ export function BookingPage() {
               </CardHeader>
               <CardContent>
                 <TheaterSelector
-                  theaters={theaters}
+                  theaters={theaters as any}
                   selectedTheaterId={selectedTheaterId}
                   onSelect={setSelectedTheaterId}
                 />
@@ -213,7 +215,7 @@ export function BookingPage() {
                     </div>
                   ) : (
                     <SeatSelectionGrid
-                      seats={seats}
+                      seats={seats as any}
                       bookedSeatIds={bookedSeatIds}
                       selectedSeatIds={selectedSeatIds}
                       onSeatToggle={handleSeatToggle}

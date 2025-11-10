@@ -4,7 +4,7 @@ import { showErrorToast, extractErrorMessage } from '@/lib/toast';
 /**
  * Redux middleware to show toast notifications for rejected async thunks
  */
-export const errorMiddleware: Middleware = () => (next) => (action) => {
+export const errorMiddleware: Middleware = () => (next) => (action: any) => {
   // Check if this is a rejected async thunk action
   if (action.type?.endsWith('/rejected')) {
     // Extract error message using utility function

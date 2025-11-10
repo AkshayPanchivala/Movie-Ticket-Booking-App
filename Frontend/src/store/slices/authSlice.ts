@@ -120,7 +120,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
       })
-      .addCase(logout.rejected, (state, action) => {
+      .addCase(logout.rejected, (state) => {
         state.isLoading = false;
         // Even if logout fails, clear local state
         state.isAuthenticated = false;

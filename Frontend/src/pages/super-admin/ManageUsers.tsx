@@ -93,12 +93,12 @@ export function ManageUsers() {
       const response = await userService.getAllUsers({
         page: currentPage,
         limit: 10,
-        ...(roleFilter && roleFilter !== 'all' && { role: roleFilter }),
+        ...(roleFilter && roleFilter !== 'all' && { role: roleFilter as any }),
         ...(searchQuery && { search: searchQuery }),
       });
 
       // Normalize user data - convert _id to id if needed
-      const normalizedUsers = response.data.users.map((user: any) => ({
+      const normalizedUsers = (response.data as any).users.map((user: any) => ({
         ...user,
         id: user.id || user._id,
       }));

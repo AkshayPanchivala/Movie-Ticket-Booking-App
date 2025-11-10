@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import { Movie } from '@/types/api.types';
 
 export function MoviesList() {
@@ -20,7 +19,7 @@ export function MoviesList() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedGenre] = useState('');
 
   // Fetch movies on mount and when filters change
   useEffect(() => {
@@ -103,7 +102,7 @@ export function MoviesList() {
               {movies.map((movie) => (
                 <MovieCard
                   key={movie.id}
-                  movie={movie}
+                  movie={movie as any}
                   onClick={() => setSelectedMovie(movie)}
                 />
               ))}
@@ -148,7 +147,7 @@ export function MoviesList() {
       </div>
 
       <MovieDetailsModal
-        movie={selectedMovie}
+        movie={selectedMovie as any}
         open={!!selectedMovie}
         onClose={() => setSelectedMovie(null)}
         onBookNow={handleBookNow}
