@@ -521,7 +521,6 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 ## Future Enhancements
 
 - [ ] WebSocket implementation for real-time seat availability
-- [ ] Payment gateway integration
 - [ ] Email notifications
 - [ ] File upload for movie posters
 - [ ] Advanced search and filtering
@@ -533,4 +532,4 @@ ISC
 
 ## Author
 
-CineHub Development Team
+AkshayPanchivala 
