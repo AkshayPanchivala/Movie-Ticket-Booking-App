@@ -64,5 +64,3 @@ This is a full-stack movie ticket booking application built with the MERN stack 
    cd Frontend
    ```
 2. Open and review the **README.md** file located inside the `Frontend` directory.
-
-    ```

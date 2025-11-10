@@ -16,8 +16,12 @@
     "nodejs",
     "mongodb"
   ],
-  "author": "",
+  "author": "Akshay Panchivala",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AkshayPanchivala/Movie-Ticket-Booking-App.git"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
